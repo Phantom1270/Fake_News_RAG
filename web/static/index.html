@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Base Q&A | Fact-Check Assistant</title>
+  <meta name="description" content="Ask questions and get reliable, fact-checked answers retrieved from our verified knowledge base.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(99, 102, 241, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --surface: rgba(15, 23, 42, 0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1.25rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 580px;
+    }
+
+    /* Question Input Card */
+    .qa-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .qa-card:focus-within {
+      border-color: var(--card-hover-border);
+      box-shadow: 0 20px 40px -10px var(--accent-glow);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 1rem 1.15rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.85rem;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 1.02rem;
+      resize: vertical;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    textarea::placeholder {
+      color: #64748b;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .suggestions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .suggestions span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 0.3rem 0.7rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-ask {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1.75rem;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 0.85rem;
+      font-size: 0.98rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+      margin-left: auto;
+    }
+
+    .btn-ask:hover:not(:disabled) {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px -5px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-ask:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading Indicator */
+    .loading-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      gap: 1.25rem;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3.5px solid rgba(99, 102, 241, 0.15);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      text-align: center;
+    }
+
+    .loading-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Error Message */
+    .error-card {
+      display: none;
+      padding: 1.15rem 1.4rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 1rem;
+      color: #fca5a5;
+      font-size: 0.95rem;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .error-card.active {
+      display: flex;
+    }
+
+    .error-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    /* Results Section */
+    .result-container {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .answer-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    .answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .answer-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .provider-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.4rem;
+    }
+
+    .answer-body {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: #e2e8f0;
+      white-space: pre-line;
+    }
+
+    /* Sources Section */
+    .sources-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .sources-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sources-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sources-count {
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.78rem;
+      color: #94a3b8;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sources-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .source-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+    }
+
+    .source-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(15, 23, 42, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .source-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .source-domain {
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #818cf8;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .source-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .verdict-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .verdict-false {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .verdict-true {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .verdict-misc {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.45rem;
+      border-radius: 0.35rem;
+    }
+
+    .source-headline {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.6rem;
+    }
+
+    .source-headline a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .source-headline a:hover {
+      color: #a5b4fc;
+      text-decoration: underline;
+    }
+
+    .source-excerpt {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.55;
+      border-left: 2px solid rgba(99, 102, 241, 0.3);
+      padding-left: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: auto;
+      padding-top: 3rem;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 1.85rem; }
+      .qa-card { padding: 1.25rem; }
+      .answer-card { padding: 1.25rem; }
+      .btn-ask { width: 100%; margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="badge">
+        <span class="dot"></span>
+        <span>Verified Fact-Check Knowledge Base</span>
+      </div>
+      <h1>Knowledge Base Q&A</h1>
+      <p class="subtitle">Ask any question to retrieve verified fact-checks and generate accurate, cited answers powered by RAG.</p>
+    </header>
+
+    <!-- Error Alert -->
+    <div id="error-card" class="error-card" role="alert">
+      <div class="error-icon">&#9888;</div>
+      <div id="error-message">An error occurred.</div>
+    </div>
+
+    <!-- Main Question Form -->
+    <main class="qa-card">
+      <form id="qa-form" class="input-group" onsubmit="handleAsk(event)">
+        <label for="question-input">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #818cf8;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Enter your question:
+        </label>
+        <textarea
+          id="question-input"
+          placeholder="e.g., Were the Nepal flood videos authentic? Or ask about any fact-checked claim..."
+          rows="3"
+          required
+        ></textarea>
+        
+        <div class="controls-row">
+          <div class="suggestions">
+            <span>Try:</span>
+            <button type="button" class="chip" onclick="setQuery('Were the Nepal flood videos authentic?')">Nepal flood videos</button>
+            <button type="button" class="chip" onclick="setQuery('Did NASA discover Ashoka Stambh on the moon?')">NASA moon discovery</button>
+            <button type="button" class="chip" onclick="setQuery('Is the viral video of a flooded train in Bihar real?')">Flooded train</button>
+          </div>
+
+          <button type="submit" id="ask-btn" class="btn-ask">
+            <span>Ask Knowledge Base</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Loading Indicator -->
+    <section id="loading-indicator" class="loading-container" aria-live="polite">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loading-stage">Searching knowledge base...</div>
+      <div class="loading-subtext">Retrieving relevant passages and synthesizing verified answer</div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="result-section" class="result-container" aria-live="polite">
+      <!-- Generated Answer -->
+      <article class="answer-card">
+        <div class="answer-header">
+          <div class="answer-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Generated Answer
+          </div>
+          <div id="provider-badge" class="provider-tag">Provider: Groq</div>
+        </div>
+        <div id="answer-text" class="answer-body"></div>
+      </article>
+
+      <!-- Sources List -->
+      <section class="sources-section">
+        <div class="sources-header">
+          <div class="sources-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Supporting Sources & Fact-Checks
+          </div>
+          <span id="sources-count" class="sources-count">0 sources</span>
+        </div>
+        <div id="sources-list" class="sources-grid"></div>
+      </section>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      RAG Question-Answering System &bull; Powered by FastAPI &bull; Hybrid BM25 + Chroma Retrieval
+    </footer>
+  </div>
+
+  <script>
+    function setQuery(text) {
+      const input = document.getElementById('question-input');
+      input.value = text;
+      input.focus();
+    }
+
+    function showError(message) {
+      const errCard = document.getElementById('error-card');
+      const errMsg = document.getElementById('error-message');
+      errMsg.textContent = message;
+      errCard.classList.add('active');
+    }
+
+    function clearError() {
+      const errCard = document.getElementById('error-card');
+      errCard.classList.remove('active');
+    }
+
+    function formatVerdict(verdict) {
+      const v = (verdict || 'UNVERIFIED').toUpperCase();
+      let cls = 'verdict-misc';
+      if (v.includes('FALSE') || v.includes('FAKE') || v.includes('MISLEADING')) {
+        cls = 'verdict-false';
+      } else if (v.includes('TRUE') || v.includes('CORRECT')) {
+        cls = 'verdict-true';
+      }
+      return `<span class="verdict-pill ${cls}">${escapeHtml(v)}</span>`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function handleAsk(e) {
+      e.preventDefault();
+      clearError();
+
+      const input = document.getElementById('question-input');
+      const question = input.value.trim();
+      if (!question) {
+        showError('Please enter a question before asking.');
+        return;
+      }
+
+      const askBtn = document.getElementById('ask-btn');
+      const loading = document.getElementById('loading-indicator');
+      const resultSec = document.getElementById('result-section');
+      const stageText = document.getElementById('loading-stage');
+
+      askBtn.disabled = true;
+      loading.style.display = 'flex';
+      resultSec.style.display = 'none';
+      stageText.textContent = 'Searching knowledge base...';
+
+      const timer = setTimeout(() => {
+        stageText.textContent = 'Synthesizing verified answer with LLM...';
+      }, 1200);
+
+      try {
+        const response = await fetch('/api/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ question: question, top_k: 5 })
+        });
+
+        clearTimeout(timer);
+
+        if (!response.ok) {
+          let errDetail = 'Failed to retrieve answer from server.';
+          try {
+            const errData = await response.json();
+            if (errData && errData.detail) errDetail = errData.detail;
+          } catch (_) {}
+          throw new Error(errDetail);
+        }
+
+        const data = await response.json();
+
+        // Render Answer
+        document.getElementById('answer-text').textContent = data.answer || 'No answer generated.';
+        document.getElementById('provider-badge').textContent = `Provider: ${data.provider || 'RAG'}`;
+
+        // Render Sources
+        const sourcesList = document.getElementById('sources-list');
+        const sourcesCount = document.getElementById('sources-count');
+        sourcesList.innerHTML = '';
+
+        const sources = data.sources || [];
+        sourcesCount.textContent = `${sources.length} source${sources.length === 1 ? '' : 's'}`;
+
+        if (sources.length === 0) {
+          sourcesList.innerHTML = `
+            <div class="source-card" style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+              No matching knowledge base sources found above the similarity threshold.
+            </div>`;
+        } else {
+          sources.forEach(src => {
+            const card = document.createElement('div');
+            card.className = 'source-card';
+            
+            const urlLink = src.url ? 
+              `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(src.title || src.url)} &#x2197;</a>` :
+              escapeHtml(src.title || 'Untitled Fact Check');
+
+            card.innerHTML = `
+              <div class="source-meta">
+                <span class="source-domain">&#x1F517; ${escapeHtml(src.source || 'Knowledge Base')}</span>
+                <div class="source-badges">
+                  ${formatVerdict(src.verdict)}
+                  <span class="score-badge">Match: ${src.score}</span>
+                </div>
+              </div>
+              <div class="source-headline">${urlLink}</div>
+              ${src.excerpt ? `<blockquote class="source-excerpt">${escapeHtml(src.excerpt)}</blockquote>` : ''}
+            `;
+            sourcesList.appendChild(card);
+          });
+        }
+
+        resultSec.style.display = 'flex';
+        resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        showError(err.message || 'An error occurred while contacting the server.');
+      } finally {
+        clearTimeout(timer);
+        askBtn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

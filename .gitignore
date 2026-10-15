@@ -1,0 +1,88 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# General local data and databases
+/data/
+Data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Keep the existing RAG knowledge base and indexes
+!rag/
+!rag/data/
+!rag/data/**
+!rag/data/rag.db
+!rag/data/indexes/
+!rag/data/indexes/**
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+rag/logs/*
+!rag/logs/.gitkeep
+
+# Temporary test payloads and experiments
+test_upload.json
+test_factchecks.json
+test2.py
+gemini_models.json
+
+# Scraped/generated datasets
+/scraped_output/
+/Data/
+/altnews.txt
+
+# Local audit and experimentation scripts
+scripts/audit_rag.py
+scripts/db_audit.py
+scripts/sanity_check.py
+scripts/test2.py
+scripts/test_apis.py
+scripts/test_boot.py
+scripts/test_ingestion.py
+
+scripts/altnews_scraper/checkpoint.json
