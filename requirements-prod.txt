@@ -32,3 +32,4 @@ datasketch>=1.0.0
 groq
 openai
 duckduckgo-search>=4.0
+pytest

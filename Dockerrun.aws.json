@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "383000882677.dkr.ecr.ap-south-1.amazonaws.com/fakenews-rag:latest",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": 8000
+    }
+  ]
+}
