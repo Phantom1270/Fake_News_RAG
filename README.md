@@ -12,11 +12,12 @@ An enterprise-ready **Retrieval-Augmented Generation (RAG)** system designed to 
 
 ## 🌐 Live Hosted Application
 
-| Resource | URL | Status |
-| :--- | :--- | :--- |
-| **Live Web Application** | **[http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/](http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/)** | 🟢 Operational |
-| **System Health Probe** | **[http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/api/health](http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/api/health)** | 🟢 `{"status":"ok","indexed_documents":2499}` |
-| **Interactive API Docs (Swagger)** | **[http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/docs](http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/docs)** | 🟢 Available |
+| Access Method | URL | Description | Status |
+| :--- | :--- | :--- | :--- |
+| **Global HTTPS (Mobile & Desktop)** | **[https://d2nll19ill5bq3.cloudfront.net/](https://d2nll19ill5bq3.cloudfront.net/)** | 🔒 **Universal SSL Link** (Opens on all iPhones, Androids, & PCs) | 🟢 Operational |
+| **Direct Elastic Beanstalk** | **[http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/](http://fakenews-rag-demo.ap-south-1.elasticbeanstalk.com/)** | Direct HTTP origin endpoint | 🟢 Operational |
+| **System Health Probe** | **[https://d2nll19ill5bq3.cloudfront.net/api/health](https://d2nll19ill5bq3.cloudfront.net/api/health)** | Live retriever & database verification | 🟢 `{"status":"ok","indexed_documents":2499}` |
+| **Interactive API Docs (Swagger)** | **[https://d2nll19ill5bq3.cloudfront.net/docs](https://d2nll19ill5bq3.cloudfront.net/docs)** | OpenAPI / Swagger interactive documentation | 🟢 Available |
 
 ---
 
