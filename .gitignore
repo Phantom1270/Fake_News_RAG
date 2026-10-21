@@ -86,3 +86,7 @@ scripts/test_boot.py
 scripts/test_ingestion.py
 
 scripts/altnews_scraper/checkpoint.json
+
+# Local cloud operations & cleanup guides (strictly local)
+CLOUD_LIFECYCLE_OPS.md
+AWS_CLEANUP.md

@@ -31,8 +31,8 @@ An enterprise-ready **Retrieval-Augmented Generation (RAG)** system designed to 
 5. [Automated Testing](#-automated-testing)
 6. [API Documentation](#-api-documentation)
 7. [AWS Cloud CI/CD Pipeline](#-aws-cloud-cicd-pipeline)
-8. [AWS CLI Operations & Teardown Playbook](#-aws-cli-operations--teardown-playbook)
-9. [Project Directory Layout](#-project-directory-layout)
+8. [Project Directory Layout](#-project-directory-layout)
+9. [Authors & Acknowledgments](#-authors--acknowledgments)
 
 ---
 
@@ -260,45 +260,6 @@ Whenever you push commits to `main`, CodePipeline automatically redeploys the la
 
 ---
 
-## 🛠️ AWS CLI Operations & Teardown Playbook
-
-All cloud resources can be inspected, monitored, or torn down directly from the **AWS CLI**:
-
-### 1. Check Live Environment Status
-```bash
-aws elasticbeanstalk describe-environments --environment-names fakenews-env --region ap-south-1 --query "Environments[0].{Status:Status,Health:Health,CNAME:CNAME}"
-```
-
-### 2. View Live Server Logs
-```bash
-aws elasticbeanstalk request-environment-info --environment-name fakenews-env --info-type tail --region ap-south-1
-aws elasticbeanstalk retrieve-environment-info --environment-name fakenews-env --info-type tail --region ap-south-1 --query "EnvironmentInfo[0].Message" --output text
-```
-
-### 3. Check CI/CD Pipeline Status
-```bash
-aws codepipeline get-pipeline-state --name fakenews-pipeline --region ap-south-1 --query "stageStates[].{Stage:stageName,Status:latestExecution.status}"
-```
-
-### 4. Complete Resource Teardown (Post-Demo Clean Up)
-When your demonstration or evaluation is complete, run these commands to safely decommission the cloud resources:
-
-```bash
-# 1. Terminate the Elastic Beanstalk Environment (deletes the EC2 instance & EBS volume)
-aws elasticbeanstalk terminate-environment --environment-name fakenews-env --region ap-south-1
-
-# 2. Delete the Elastic Beanstalk Application
-aws elasticbeanstalk delete-application --application-name fakenews-detector --terminate-env-by-force --region ap-south-1
-
-# 3. Delete the CodePipeline
-aws codepipeline delete-pipeline --name fakenews-pipeline --region ap-south-1
-
-# 4. Delete the Amazon ECR Repository and container image
-aws ecr delete-repository --repository-name fakenews-rag --force --region ap-south-1
-```
-
----
-
 ## 📁 Project Directory Layout
 
 ```text
@@ -311,8 +272,7 @@ Fake_News_Detector/
 ├── requirements.txt                # Production Python dependencies
 ├── requirements-prod.txt           # Minimal deployment requirements
 ├── .env.example                    # Template for API keys
-├── DEPLOYMENT.md                   # Detailed manual deployment guide
-├── AWS_CLEANUP.md                  # Comprehensive AWS billing protection guide
+├── DEPLOYMENT.md                   # Cloud and Docker architecture overview
 ├── rag/
 │   ├── agent/                      # LLM generation & synthesis agent
 │   ├── config/                     # Settings and YAML configuration
