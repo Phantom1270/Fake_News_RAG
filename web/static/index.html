@@ -3,26 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Knowledge Base Q&A | Fact-Check Assistant</title>
-  <meta name="description" content="Ask questions and get reliable, fact-checked answers retrieved from our verified knowledge base.">
+  <title>The Daily Verdict · Fact-Check Knowledge Base</title>
+  <meta name="description" content="The Daily Verdict - A warm, minimal newspaper front page for verifying viral claims with RAG.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
-      --card-bg: rgba(30, 41, 59, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover-border: rgba(99, 102, 241, 0.4);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent-glow: rgba(99, 102, 241, 0.25);
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --surface: rgba(15, 23, 42, 0.65);
+      --bg-paper: #F4EDE0;
+      --bg-paper-alt: #EFE6D5;
+      --ink-black: #1F1A15;
+      --ink-muted: #5C5248;
+      --ink-faint: #8B7355;
+      --rule-sepia: rgba(139, 115, 85, 0.45);
+      --rule-sepia-strong: #8B7355;
+      --accent-false: #8C2F25;
+      --accent-true: #3F5E3A;
+      --accent-misc: #B8862B;
     }
 
     * {
@@ -32,560 +29,921 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-main);
+      background-color: var(--bg-paper);
+      /* Subtle organic newsprint grain texture */
+      background-image: radial-gradient(rgba(31, 26, 21, 0.04) 1px, transparent 1px);
+      background-size: 8px 8px;
+      color: var(--ink-black);
+      font-family: 'Libre Caslon Text', 'Source Serif 4', Georgia, serif;
+      font-size: 1.05rem;
+      line-height: 1.65;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2.5rem 1.25rem;
-      line-height: 1.6;
+      padding: 1.5rem 1rem 3rem 1rem;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
+    .broadsheet {
       width: 100%;
-      max-width: 860px;
+      max-width: 1060px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
     }
 
-    /* Header */
-    header {
-      text-align: center;
+    /* ========================================================
+       1. TOP MASTHEAD & HEADER STRIP
+       ======================================================== */
+    .top-strip {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.75rem;
+      padding: 0.4rem 0.25rem;
+      border-top: 1px solid var(--ink-black);
+      border-bottom: 1px solid var(--ink-black);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      flex-wrap: wrap;
+      gap: 0.4rem;
     }
 
-    .badge {
-      display: inline-flex;
+    .top-strip span {
+      white-space: nowrap;
+    }
+
+    .masthead-center {
+      text-align: center;
+      padding: 1.75rem 0 1.25rem 0;
+    }
+
+    .paper-title {
+      font-family: 'UnifrakturMaguntia', 'Playfair Display', serif;
+      font-size: 4.8rem;
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      color: var(--ink-black);
+      margin-bottom: 0.4rem;
+      user-select: none;
+    }
+
+    .paper-tagline {
+      font-family: 'Libre Caslon Text', Georgia, serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .double-rule-thick {
+      border-top: 4px double var(--ink-black);
+      margin-top: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .thin-rule {
+      border: 0;
+      border-top: 1px solid var(--rule-sepia);
+      margin: 1.5rem 0;
+    }
+
+    /* ========================================================
+       2. TELEGRAM / QUERY DESK FORM
+       ======================================================== */
+    .query-desk {
+      padding: 1.25rem 0 1.75rem 0;
+      border-bottom: 1px solid var(--ink-black);
+      margin-bottom: 2rem;
+    }
+
+    .desk-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .desk-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.35rem 0.85rem;
-      border-radius: 9999px;
-      background: rgba(99, 102, 241, 0.12);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
     }
 
-    .badge .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 10px var(--success);
-      animation: pulse 2s infinite ease-in-out;
+    .desk-label::before {
+      content: "§";
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--ink-faint);
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
+    .desk-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    p.subtitle {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-      max-width: 580px;
-    }
-
-    /* Question Input Card */
-    .qa-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 1.25rem;
-      padding: 1.75rem;
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .qa-card:focus-within {
-      border-color: var(--card-hover-border);
-      box-shadow: 0 20px 40px -10px var(--accent-glow);
-    }
-
-    .input-group {
+    .typewriter-form {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
 
-    label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #e2e8f0;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    textarea {
+    .typewriter-input {
       width: 100%;
-      min-height: 110px;
-      padding: 1rem 1.15rem;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.85rem;
-      color: #ffffff;
-      font-family: inherit;
-      font-size: 1.02rem;
-      resize: vertical;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    textarea:focus {
-      border-color: var(--primary);
-      background: rgba(15, 23, 42, 0.9);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-    }
-
-    textarea::placeholder {
-      color: #64748b;
-    }
-
-    .controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .suggestions {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .suggestions span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #cbd5e1;
-      padding: 0.3rem 0.7rem;
-      border-radius: 9999px;
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .chip:hover {
-      background: rgba(99, 102, 241, 0.2);
-      border-color: rgba(99, 102, 241, 0.4);
-      color: #ffffff;
-      transform: translateY(-1px);
-    }
-
-    .btn-ask {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      padding: 0.75rem 1.75rem;
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #ffffff;
+      background: transparent;
       border: none;
-      border-radius: 0.85rem;
-      font-size: 0.98rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-      margin-left: auto;
+      border-bottom: 2px solid var(--ink-black);
+      color: var(--ink-black);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      padding: 0.6rem 0.2rem;
+      outline: none;
+      resize: vertical;
+      min-height: 60px;
+      transition: border-color 0.2s;
     }
 
-    .btn-ask:hover:not(:disabled) {
-      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px -5px rgba(99, 102, 241, 0.5);
+    .typewriter-input:focus {
+      border-bottom: 2.5px solid var(--accent-false);
+      background: rgba(31, 26, 21, 0.015);
     }
 
-    .btn-ask:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
+    .typewriter-input::placeholder {
+      color: rgba(92, 82, 72, 0.55);
+      font-style: italic;
+      font-family: 'Libre Caslon Text', Georgia, serif;
+      font-size: 1.05rem;
     }
 
-    /* Loading Indicator */
-    .loading-container {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 1.5rem;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(16px);
-      border-radius: 1.25rem;
-      gap: 1.25rem;
-    }
-
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3.5px solid rgba(99, 102, 241, 0.15);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-text {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #e2e8f0;
-      text-align: center;
-    }
-
-    .loading-subtext {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* Error Message */
-    .error-card {
-      display: none;
-      padding: 1.15rem 1.4rem;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 1rem;
-      color: #fca5a5;
-      font-size: 0.95rem;
-      align-items: flex-start;
-      gap: 0.75rem;
-    }
-
-    .error-card.active {
-      display: flex;
-    }
-
-    .error-icon {
-      font-size: 1.25rem;
-      line-height: 1;
-    }
-
-    /* Results Section */
-    .result-container {
-      display: none;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .answer-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(16px);
-      border-radius: 1.25rem;
-      padding: 2rem;
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-    }
-
-    .answer-header {
+    .form-bottom-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.25rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem;
     }
 
-    .answer-title {
+    .telegram-chips {
+      font-family: 'Libre Caslon Text', Georgia, serif;
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .telegram-chips strong {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      margin-right: 0.35rem;
+    }
+
+    .chip-btn {
+      background: none;
+      border: none;
+      color: var(--ink-black);
+      font-family: inherit;
+      font-size: inherit;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-color: var(--rule-sepia-strong);
+      text-underline-offset: 3px;
+      padding: 0;
+      transition: color 0.15s, text-decoration-color 0.15s;
+    }
+
+    .chip-btn:hover {
+      color: var(--accent-false);
+      text-decoration-color: var(--accent-false);
+    }
+
+    .btn-print {
+      background: var(--ink-black);
+      color: var(--bg-paper);
+      border: 1px solid var(--ink-black);
+      padding: 0.75rem 1.6rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      border-radius: 0;
+    }
+
+    .btn-print:hover:not(:disabled) {
+      background: var(--accent-false);
+      border-color: var(--accent-false);
+      color: #ffffff;
+    }
+
+    .btn-print:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* ========================================================
+       3. NOTICES & STATES (Loading, Error, Placeholder)
+       ======================================================== */
+    .press-loading {
+      display: none;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      border: 1px dashed var(--rule-sepia-strong);
+      background: rgba(239, 230, 213, 0.4);
+      margin-bottom: 2rem;
+    }
+
+    .press-loading-title {
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 1.15rem;
       font-weight: 700;
-      color: #ffffff;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      margin-bottom: 0.5rem;
+    }
+
+    .typewriter-dots::after {
+      content: " .";
+      animation: dots 1.5s infinite steps(4, end);
+    }
+
+    @keyframes dots {
+      0%, 20% { content: " ."; }
+      40% { content: " . ."; }
+      60%, 100% { content: " . . ."; }
+    }
+
+    .press-loading-sub {
+      font-family: 'Libre Caslon Text', Georgia, serif;
+      font-style: italic;
+      color: var(--ink-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .skeleton-columns {
       display: flex;
-      align-items: center;
+      gap: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      opacity: 0.5;
+    }
+
+    .skeleton-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       gap: 0.6rem;
     }
 
-    .provider-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: #a5b4fc;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 0.25rem 0.6rem;
-      border-radius: 0.4rem;
+    .skeleton-line {
+      height: 10px;
+      background: rgba(31, 26, 21, 0.15);
+      border-radius: 1px;
     }
 
-    .answer-body {
-      font-size: 1.05rem;
-      line-height: 1.75;
-      color: #e2e8f0;
-      white-space: pre-line;
+    /* Correction / Error Notice */
+    .correction-notice {
+      display: none;
+      border: 2px solid var(--accent-false);
+      padding: 1.25rem 1.5rem;
+      background: rgba(140, 47, 37, 0.05);
+      margin-bottom: 2rem;
     }
 
-    /* Sources Section */
-    .sources-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .correction-notice.active {
+      display: block;
     }
 
-    .sources-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .sources-title {
-      font-size: 1rem;
+    .correction-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
       font-weight: 700;
-      color: #cbd5e1;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-false);
+      margin-bottom: 0.4rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .sources-count {
-      background: rgba(255, 255, 255, 0.08);
-      font-size: 0.78rem;
-      color: #94a3b8;
-      padding: 0.15rem 0.5rem;
-      border-radius: 9999px;
-      font-family: 'JetBrains Mono', monospace;
+    .correction-body {
+      font-size: 0.95rem;
+      color: var(--ink-black);
+      line-height: 1.5;
     }
 
-    .sources-grid {
-      display: flex;
+    /* Blank / Initial Front-Page Notice */
+    .empty-edition {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      border: 1px solid var(--rule-sepia);
+      background: rgba(255, 255, 255, 0.2);
+      margin-bottom: 2.5rem;
+    }
+
+    .empty-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--ink-faint);
+      margin-bottom: 0.75rem;
+    }
+
+    .empty-lede {
+      font-family: 'Libre Caslon Text', Georgia, serif;
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ========================================================
+       4. LEAD STORY & VERDICT STAMP
+       ======================================================== */
+    .edition-results {
+      display: none;
       flex-direction: column;
-      gap: 0.85rem;
     }
 
-    .source-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 1rem;
-      padding: 1.25rem;
-      transition: all 0.2s ease;
+    .verdict-banner-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 1.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
     }
 
-    .source-card:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-      background: rgba(15, 23, 42, 0.8);
-      transform: translateY(-1px);
+    /* Weathered Rubber Stamp */
+    .stamp-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      transform: rotate(-6deg);
+      transform-origin: center center;
+      animation: stampDrop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    .source-meta {
+    @keyframes stampDrop {
+      0% {
+        opacity: 0;
+        transform: scale(1.4) rotate(-14deg);
+      }
+      70% {
+        transform: scale(0.96) rotate(-5deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(-6deg);
+      }
+    }
+
+    .rubber-stamp {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.3rem 1.1rem;
+      border: 3.5px double currentColor;
+      line-height: 1.1;
+      text-shadow: 0 0 1px currentColor;
+      user-select: none;
+      background: rgba(244, 237, 224, 0.85);
+    }
+
+    .stamp-false {
+      color: var(--accent-false);
+      border-color: var(--accent-false);
+    }
+
+    .stamp-true {
+      color: var(--accent-true);
+      border-color: var(--accent-true);
+    }
+
+    .stamp-misc {
+      color: var(--accent-misc);
+      border-color: var(--accent-misc);
+    }
+
+    .stamp-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      border-left: 2px solid var(--rule-sepia);
+      padding-left: 0.9rem;
+    }
+
+    /* Lead Story Typography */
+    .lead-story {
+      margin-bottom: 2.5rem;
+    }
+
+    .story-headline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ink-black);
+      margin-bottom: 0.85rem;
+    }
+
+    .story-deck {
+      font-family: 'Libre Caslon Text', Georgia, serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--ink-muted);
+      line-height: 1.45;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--rule-sepia);
+      padding-bottom: 0.85rem;
+    }
+
+    .story-byline {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.6rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 1.5rem;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
 
-    .source-domain {
-      font-weight: 600;
+    .lead-story-body {
+      column-count: 2;
+      column-gap: 2.75rem;
+      column-rule: 1px solid var(--rule-sepia);
+      font-family: 'Libre Caslon Text', 'Source Serif 4', Georgia, serif;
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: var(--ink-black);
+      text-align: justify;
+      hyphens: auto;
+    }
+
+    .lead-story-body p {
+      margin-bottom: 1rem;
+    }
+
+    /* Newspaper Drop Cap on first letter */
+    .lead-story-body p:first-of-type::first-letter {
+      float: left;
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      line-height: 0.78;
+      padding-top: 4px;
+      padding-right: 12px;
+      padding-bottom: 2px;
+      font-weight: 900;
+      color: var(--ink-black);
+    }
+
+    .lead-story-body strong {
+      font-weight: 700;
+      color: var(--ink-black);
+    }
+
+    .lead-story-body strong.verdict-bold-false {
+      color: var(--accent-false);
+      text-decoration: underline;
+      text-decoration-thickness: 1.5px;
+    }
+
+    .lead-story-body strong.verdict-bold-true {
+      color: var(--accent-true);
+      text-decoration: underline;
+      text-decoration-thickness: 1.5px;
+    }
+
+    .lead-story-body strong.verdict-bold-misc {
+      color: var(--accent-misc);
+    }
+
+    /* ========================================================
+       5. ARCHIVE SECTION & SOURCES GRID
+       ======================================================== */
+    .archive-divider {
+      margin: 2.5rem 0 1.75rem 0;
+      border-top: 1px solid var(--ink-black);
+      border-bottom: 1px solid var(--ink-black);
+      padding: 0.5rem 0;
+      text-align: center;
+    }
+
+    .archive-heading {
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.82rem;
-      color: #818cf8;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+    }
+
+    .sources-broadsheet {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin-bottom: 2.5rem;
+      border-top: 1px solid var(--rule-sepia);
+      border-bottom: 1px solid var(--rule-sepia);
+    }
+
+    .article-col {
+      padding: 1.5rem 1.4rem;
+      border-right: 1px solid var(--rule-sepia);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .article-col:nth-child(3n),
+    .article-col:last-child {
+      border-right: none;
+    }
+
+    .article-col:nth-child(n+4) {
+      border-top: 1px solid var(--rule-sepia);
+    }
+
+    /* Featured Lead Article spans 2 columns when appropriate */
+    .article-col.featured-article {
+      grid-column: span 2;
+      background: rgba(239, 230, 213, 0.25);
+    }
+
+    .article-dateline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .article-headline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 0.65rem;
+    }
+
+    .article-col.featured-article .article-headline {
+      font-size: 1.65rem;
+    }
+
+    .article-headline a {
+      color: var(--ink-black);
+      text-decoration: none;
+      transition: color 0.15s, text-decoration 0.15s;
+    }
+
+    .article-headline a:hover {
+      color: var(--accent-false);
+      text-decoration: underline;
+    }
+
+    .article-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
     }
 
-    .source-badges {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
+    .article-tag.tag-false {
+      color: var(--accent-false);
     }
 
-    .verdict-pill {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.2rem 0.55rem;
-      border-radius: 9999px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+    .article-tag.tag-true {
+      color: var(--accent-true);
     }
 
-    .verdict-false {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #f87171;
+    .article-tag.tag-misc {
+      color: var(--accent-misc);
     }
 
-    .verdict-true {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #34d399;
+    .article-excerpt {
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      flex-grow: 1;
     }
 
-    .verdict-misc {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      color: #fbbf24;
-    }
-
-    .score-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: #94a3b8;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.2rem 0.45rem;
-      border-radius: 0.35rem;
-    }
-
-    .source-headline {
-      font-size: 0.98rem;
+    .article-link-cont {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.74rem;
       font-weight: 600;
-      color: #f1f5f9;
-      margin-bottom: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      text-decoration: underline;
+      display: inline-block;
+      margin-top: 0.25rem;
     }
 
-    .source-headline a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.15s ease;
+    .article-link-cont:hover {
+      color: var(--accent-false);
     }
 
-    .source-headline a:hover {
-      color: #a5b4fc;
+    /* Ink-bar Relevance Gauge */
+    .relevance-block {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--rule-sepia);
+    }
+
+    .relevance-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.35rem;
+    }
+
+    .ink-bar-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(139, 115, 85, 0.2);
+    }
+
+    .ink-bar-fill {
+      height: 100%;
+      background: var(--ink-black);
+    }
+
+    /* ========================================================
+       6. COLOPHON FOOTER
+       ======================================================== */
+    footer.colophon {
+      margin-top: 3.5rem;
+      border-top: 4px double var(--ink-black);
+      padding: 1.5rem 0 1rem 0;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      line-height: 1.8;
+    }
+
+    footer.colophon a {
+      color: var(--ink-black);
       text-decoration: underline;
     }
 
-    .source-excerpt {
-      font-size: 0.88rem;
-      color: #94a3b8;
-      line-height: 1.55;
-      border-left: 2px solid rgba(99, 102, 241, 0.3);
-      padding-left: 0.85rem;
-      margin-top: 0.5rem;
+    /* ========================================================
+       7. RESPONSIVE NEWSPAPER LAYOUT
+       ======================================================== */
+    @media (max-width: 860px) {
+      .paper-title {
+        font-size: 3.4rem;
+      }
+      .sources-broadsheet {
+        grid-template-columns: 1fr;
+      }
+      .article-col {
+        border-right: none;
+        border-bottom: 1px solid var(--rule-sepia);
+      }
+      .article-col.featured-article {
+        grid-column: span 1;
+      }
+      .lead-story-body {
+        column-count: 1;
+      }
+      .story-headline {
+        font-size: 2.3rem;
+      }
     }
 
-    footer {
-      text-align: center;
-      margin-top: auto;
-      padding-top: 3rem;
-      color: #64748b;
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 640px) {
-      h1 { font-size: 1.85rem; }
-      .qa-card { padding: 1.25rem; }
-      .answer-card { padding: 1.25rem; }
-      .btn-ask { width: 100%; margin-left: 0; }
+    @media (max-width: 580px) {
+      body {
+        padding: 1rem 0.6rem 2rem 0.6rem;
+      }
+      .top-strip {
+        font-size: 0.65rem;
+        flex-direction: column;
+        text-align: center;
+      }
+      .paper-title {
+        font-size: 2.6rem;
+      }
+      .form-bottom-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-print {
+        width: 100%;
+        text-align: center;
+      }
+      .story-headline {
+        font-size: 1.9rem;
+      }
+      .lead-story-body p:first-of-type::first-letter {
+        font-size: 3.2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
+  <div class="broadsheet">
+
+    <!-- 1. TOP MASTHEAD STRIP -->
     <header>
-      <div class="badge">
-        <span class="dot"></span>
-        <span>Verified Fact-Check Knowledge Base</span>
+      <div class="top-strip">
+        <span>VOL. I · No. 001</span>
+        <span id="masthead-date">EDITION: WEDNESDAY, 21 OCT 2026</span>
+        <span>EST. 2026</span>
+        <span>PRICE: THE TRUTH</span>
       </div>
-      <h1>Knowledge Base Q&A</h1>
-      <p class="subtitle">Ask any question to retrieve verified fact-checks and generate accurate, cited answers powered by RAG.</p>
+
+      <div class="masthead-center">
+        <h1 class="paper-title">The Daily Verdict</h1>
+        <div class="paper-tagline">All the claims fit to check.</div>
+      </div>
+
+      <div class="double-rule-thick"></div>
     </header>
 
-    <!-- Error Alert -->
-    <div id="error-card" class="error-card" role="alert">
-      <div class="error-icon">&#9888;</div>
-      <div id="error-message">An error occurred.</div>
-    </div>
+    <!-- 2. TELEGRAM FORM / QUERY BOX -->
+    <section class="query-desk">
+      <div class="desk-header">
+        <span class="desk-label">Submit a Claim to the Desk</span>
+        <span class="desk-meta">Telegram Dispatch &bull; RAG Ingestion</span>
+      </div>
 
-    <!-- Main Question Form -->
-    <main class="qa-card">
-      <form id="qa-form" class="input-group" onsubmit="handleAsk(event)">
-        <label for="question-input">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #818cf8;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Enter your question:
-        </label>
+      <form id="qa-form" class="typewriter-form" onsubmit="handleAsk(event)">
         <textarea
           id="question-input"
-          placeholder="e.g., Were the Nepal flood videos authentic? Or ask about any fact-checked claim..."
-          rows="3"
+          class="typewriter-input"
+          placeholder="Type or paste a viral rumor, claim, or statement for verification..."
+          rows="2"
           required
         ></textarea>
-        
-        <div class="controls-row">
-          <div class="suggestions">
-            <span>Try:</span>
-            <button type="button" class="chip" onclick="setQuery('Were the Nepal flood videos authentic?')">Nepal flood videos</button>
-            <button type="button" class="chip" onclick="setQuery('Did NASA discover Ashoka Stambh on the moon?')">NASA moon discovery</button>
-            <button type="button" class="chip" onclick="setQuery('Is the viral video of a flooded train in Bihar real?')">Flooded train</button>
+
+        <div class="form-bottom-row">
+          <div class="telegram-chips">
+            <strong>Also in today's edition:</strong>
+            <button type="button" class="chip-btn" onclick="setQuery('Were the Nepal flood videos authentic?')">Nepal flood videos</button> · 
+            <button type="button" class="chip-btn" onclick="setQuery('Did NASA discover Ashoka Stambh on the moon?')">NASA moon discovery</button> · 
+            <button type="button" class="chip-btn" onclick="setQuery('Is the viral video of a flooded train in Bihar real?')">Flooded train</button>
           </div>
 
-          <button type="submit" id="ask-btn" class="btn-ask">
-            <span>Ask Knowledge Base</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <button type="submit" id="ask-btn" class="btn-print">
+            PRINT THE VERDICT &rarr;
           </button>
         </div>
       </form>
-    </main>
-
-    <!-- Loading Indicator -->
-    <section id="loading-indicator" class="loading-container" aria-live="polite">
-      <div class="spinner"></div>
-      <div class="loading-text" id="loading-stage">Searching knowledge base...</div>
-      <div class="loading-subtext">Retrieving relevant passages and synthesizing verified answer</div>
     </section>
 
-    <!-- Results Section -->
-    <section id="result-section" class="result-container" aria-live="polite">
-      <!-- Generated Answer -->
-      <article class="answer-card">
-        <div class="answer-header">
-          <div class="answer-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Generated Answer
-          </div>
-          <div id="provider-badge" class="provider-tag">Provider: Groq</div>
+    <!-- 3. CORRECTION NOTICE (Error state) -->
+    <div id="error-card" class="correction-notice" role="alert">
+      <div class="correction-title">
+        <span>[!] CORRECTION &amp; NOTICE FROM THE FACT DESK</span>
+      </div>
+      <div id="error-message" class="correction-body">An unexpected transmission error occurred.</div>
+    </div>
+
+    <!-- 4. LOADING STATE ("STOP THE PRESSES...") -->
+    <section id="loading-indicator" class="press-loading" aria-live="polite">
+      <div class="press-loading-title">STOP THE PRESSES<span class="typewriter-dots"></span></div>
+      <div class="press-loading-sub" id="loading-stage">Searching archives &amp; preparing verified lead dispatch...</div>
+      <div class="skeleton-columns">
+        <div class="skeleton-col">
+          <div class="skeleton-line" style="width: 100%;"></div>
+          <div class="skeleton-line" style="width: 88%;"></div>
+          <div class="skeleton-line" style="width: 94%;"></div>
+          <div class="skeleton-line" style="width: 70%;"></div>
         </div>
-        <div id="answer-text" class="answer-body"></div>
+        <div class="skeleton-col">
+          <div class="skeleton-line" style="width: 95%;"></div>
+          <div class="skeleton-line" style="width: 85%;"></div>
+          <div class="skeleton-line" style="width: 90%;"></div>
+          <div class="skeleton-line" style="width: 65%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. INITIAL PLACEHOLDER (When no query has been run yet) -->
+    <section id="empty-state" class="empty-edition">
+      <div class="empty-headline">Today's front page awaits your claim.</div>
+      <div class="empty-lede">
+        Enter a viral headline, social media statement, or public claim into the Telegram Desk above.
+        The newsroom will consult our archive of 2,499 verified fact-checks and print the conclusion in ink.
+      </div>
+    </section>
+
+    <!-- 6. RESULTS SECTION (Lead Story & Archives Grid) -->
+    <main id="result-section" class="edition-results" aria-live="polite">
+      
+      <!-- Lead Story -->
+      <article class="lead-story">
+        <!-- Verdict Rubber Stamp & Metadata Row -->
+        <div class="verdict-banner-row">
+          <div class="stamp-container">
+            <div id="stamp-badge" class="rubber-stamp stamp-false">FALSE</div>
+          </div>
+          <div id="stamp-meta-text" class="stamp-meta">
+            Confidence: 0.66 · Based on 3 filed reports
+          </div>
+        </div>
+
+        <!-- Headline & Deck -->
+        <h2 id="story-headline" class="story-headline">Fact-Check Verification Lead</h2>
+        <div id="story-deck" class="story-deck">A thorough investigation into the filed claim.</div>
+
+        <!-- Byline -->
+        <div class="story-byline">
+          <span>By the Fact Desk · Filed <span id="story-timestamp">Today</span></span>
+          <span id="story-provider">Source Model: Groq</span>
+        </div>
+
+        <!-- Two-column Body with Drop Cap -->
+        <div id="story-body" class="lead-story-body"></div>
       </article>
 
-      <!-- Sources List -->
-      <section class="sources-section">
-        <div class="sources-header">
-          <div class="sources-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            Supporting Sources & Fact-Checks
-          </div>
-          <span id="sources-count" class="sources-count">0 sources</span>
+      <!-- Archive Section Header -->
+      <div class="archive-divider">
+        <div id="archive-header-text" class="archive-heading">
+          RELATED REPORTS FROM THE ARCHIVE &mdash; 0 DISPATCHES &mdash;
         </div>
-        <div id="sources-list" class="sources-grid"></div>
-      </section>
-    </section>
+      </div>
 
-    <!-- Footer -->
-    <footer>
-      RAG Question-Answering System &bull; Powered by FastAPI &bull; Hybrid BM25 + Chroma Retrieval
+      <!-- Sources 3-Column Newspaper Grid -->
+      <section id="sources-grid" class="sources-broadsheet"></section>
+    </main>
+
+    <!-- 7. COLOPHON FOOTER -->
+    <footer class="colophon">
+      Printed by RAG Press · Hybrid BM25 + Chroma Retrieval · Powered by FastAPI &bull; Knowledge Base of 2,499 Verified Dispatches
     </footer>
+
   </div>
 
   <script>
+    // Set formatted dynamic date on masthead
+    (function initDate() {
+      const now = new Date();
+      const options = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+      const dateStr = now.toLocaleDateString('en-GB', options).toUpperCase();
+      const dateEl = document.getElementById('masthead-date');
+      if (dateEl) {
+        dateEl.textContent = `EDITION: ${dateStr}`;
+      }
+    })();
+
     function setQuery(text) {
       const input = document.getElementById('question-input');
       input.value = text;
@@ -604,17 +962,6 @@
       errCard.classList.remove('active');
     }
 
-    function formatVerdict(verdict) {
-      const v = (verdict || 'UNVERIFIED').toUpperCase();
-      let cls = 'verdict-misc';
-      if (v.includes('FALSE') || v.includes('FAKE') || v.includes('MISLEADING')) {
-        cls = 'verdict-false';
-      } else if (v.includes('TRUE') || v.includes('CORRECT')) {
-        cls = 'verdict-true';
-      }
-      return `<span class="verdict-pill ${cls}">${escapeHtml(v)}</span>`;
-    }
-
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -625,6 +972,132 @@
         .replace(/'/g, '&#39;');
     }
 
+    // Determine overall verdict category from text and sources
+    function determineOverallVerdict(answerText, sources) {
+      const upper = (answerText || '').toUpperCase();
+      if (upper.includes('**FALSE**') || upper.includes('VERDICT: FALSE') || upper.includes('IS FALSE') || upper.includes('FABRICATED') || upper.includes('FAKE')) {
+        return 'FALSE';
+      }
+      if (upper.includes('**TRUE**') || upper.includes('VERDICT: TRUE') || upper.includes('IS TRUE') || upper.includes('AUTHENTIC') || upper.includes('VERIFIED')) {
+        return 'TRUE';
+      }
+      if (upper.includes('MISLEADING') || upper.includes('UNVERIFIED') || upper.includes('PARTIALLY')) {
+        return 'MISLEADING';
+      }
+
+      // Fallback: inspect top source verdict if available
+      if (sources && sources.length > 0) {
+        const topVerdict = (sources[0].verdict || '').toUpperCase();
+        if (topVerdict.includes('FALSE') || topVerdict.includes('FAKE')) return 'FALSE';
+        if (topVerdict.includes('TRUE')) return 'TRUE';
+        if (topVerdict.includes('MISLEADING')) return 'MISLEADING';
+      }
+
+      return 'UNVERIFIED';
+    }
+
+    // Clean raw artifacts (##, CLAIM:, VERDICT:, ISO dates) from scraped excerpts
+    function cleanExcerpt(rawText) {
+      if (!rawText) return '';
+      let clean = rawText
+        .replace(/^##\s*/gm, '')
+        .replace(/CLAIM:\s*/gi, '')
+        .replace(/VERDICT:\s*[A-Z\s]+/gi, '')
+        .replace(/Category:\s*Fact Check/gi, '')
+        .replace(/Date:\s*\d{4}-\d{2}-\d{2}[T\s\d:+.-]*/gi, '')
+        .replace(/\?\?/g, '"')
+        .replace(/\?1/g, '₹')
+        .trim();
+      
+      // Limit to ~240 characters for tidy newspaper column layout
+      if (clean.length > 250) {
+        clean = clean.substring(0, 245).replace(/\s+\S*$/, '') + '…';
+      }
+      return clean;
+    }
+
+    // Extract human-friendly date from excerpt or source
+    function extractDateline(sourceObj) {
+      const domain = (sourceObj.source || 'ARCHIVE').toUpperCase();
+      const raw = sourceObj.excerpt || '';
+      const dateMatch = raw.match(/Date:\s*(\d{4}-\d{2}-\d{2})/i) || sourceObj.url.match(/(\d{4})\/(\d{2})/);
+      
+      if (dateMatch && dateMatch[1]) {
+        try {
+          const d = new Date(dateMatch[1]);
+          if (!isNaN(d.getTime())) {
+            const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
+            return `${domain} &mdash; ${dateStr}`;
+          }
+        } catch (_) {}
+      }
+      return `${domain} &mdash; ARCHIVED REPORT`;
+    }
+
+    // Parse answer markdown into headline, deck, and body
+    function parseStoryContent(rawAnswer, question) {
+      if (!rawAnswer) return { headline: question, deck: '', bodyParagraphs: [] };
+
+      // Split into sentences / paragraphs
+      const cleaned = rawAnswer.trim();
+      const paragraphs = cleaned.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      
+      let headline = '';
+      let deck = '';
+      let bodyParas = [];
+
+      // Extract first sentence as primary lead headline
+      const firstPara = paragraphs[0] || '';
+      const sentenceMatch = firstPara.match(/^([^.?!]+[.?!])/);
+
+      if (sentenceMatch && sentenceMatch[1].length < 130) {
+        headline = sentenceMatch[1].trim();
+        const remainder = firstPara.slice(sentenceMatch[1].length).trim();
+        if (remainder) {
+          deck = remainder;
+        }
+        bodyParas = paragraphs.slice(1);
+      } else {
+        headline = firstPara.length < 140 ? firstPara : question;
+        bodyParas = paragraphs.length > 1 ? paragraphs.slice(1) : [firstPara];
+      }
+
+      if (!deck && bodyParas.length > 0 && bodyParas[0].length < 160) {
+        deck = bodyParas.shift();
+      }
+
+      if (bodyParas.length === 0) {
+        bodyParas = [cleaned];
+      }
+
+      return { headline, deck, bodyParagraphs: bodyParas };
+    }
+
+    // Format bold text with verdict colors
+    function formatStoryBodyHtml(paragraphs, verdictType) {
+      return paragraphs.map(p => {
+        let text = escapeHtml(p);
+
+        // Replace markdown bold **text**
+        text = text.replace(/\*\*(.*?)\*\*/g, (match, p1) => {
+          const upper = p1.toUpperCase();
+          if (upper.includes('FALSE') || upper.includes('FAKE')) {
+            return `<strong class="verdict-bold-false">${p1}</strong>`;
+          } else if (upper.includes('TRUE')) {
+            return `<strong class="verdict-bold-true">${p1}</strong>`;
+          } else if (upper.includes('MISLEADING')) {
+            return `<strong class="verdict-bold-misc">${p1}</strong>`;
+          }
+          return `<strong>${p1}</strong>`;
+        });
+
+        // Convert single-newline list items to tidy lines
+        text = text.replace(/\n(?=[0-9]+\.|\*|-)/g, '<br>&bull; ');
+
+        return `<p>${text}</p>`;
+      }).join('');
+    }
+
     async function handleAsk(e) {
       e.preventDefault();
       clearError();
@@ -632,22 +1105,24 @@
       const input = document.getElementById('question-input');
       const question = input.value.trim();
       if (!question) {
-        showError('Please enter a question before asking.');
+        showError('Please enter a claim or question before dispatching.');
         return;
       }
 
       const askBtn = document.getElementById('ask-btn');
       const loading = document.getElementById('loading-indicator');
+      const emptyState = document.getElementById('empty-state');
       const resultSec = document.getElementById('result-section');
       const stageText = document.getElementById('loading-stage');
 
       askBtn.disabled = true;
-      loading.style.display = 'flex';
+      if (emptyState) emptyState.style.display = 'none';
       resultSec.style.display = 'none';
-      stageText.textContent = 'Searching knowledge base...';
+      loading.style.display = 'block';
+      stageText.textContent = 'Searching archives & retrieving relevant dispatches...';
 
       const timer = setTimeout(() => {
-        stageText.textContent = 'Synthesizing verified answer with LLM...';
+        stageText.textContent = 'Setting lead story in type & synthesizing verified answer...';
       }, 1200);
 
       try {
@@ -671,45 +1146,117 @@
         }
 
         const data = await response.json();
-
-        // Render Answer
-        document.getElementById('answer-text').textContent = data.answer || 'No answer generated.';
-        document.getElementById('provider-badge').textContent = `Provider: ${data.provider || 'RAG'}`;
-
-        // Render Sources
-        const sourcesList = document.getElementById('sources-list');
-        const sourcesCount = document.getElementById('sources-count');
-        sourcesList.innerHTML = '';
-
         const sources = data.sources || [];
-        sourcesCount.textContent = `${sources.length} source${sources.length === 1 ? '' : 's'}`;
+        const verdict = determineOverallVerdict(data.answer, sources);
+
+        // 1. Update Rubber Stamp & Animation
+        const stampEl = document.getElementById('stamp-badge');
+        stampEl.className = 'rubber-stamp';
+        if (verdict === 'FALSE') {
+          stampEl.classList.add('stamp-false');
+          stampEl.textContent = 'FALSE';
+        } else if (verdict === 'TRUE') {
+          stampEl.classList.add('stamp-true');
+          stampEl.textContent = 'VERIFIED TRUE';
+        } else {
+          stampEl.classList.add('stamp-misc');
+          stampEl.textContent = verdict;
+        }
+
+        // Re-trigger stamp bounce animation
+        const stampContainer = stampEl.parentElement;
+        stampContainer.style.animation = 'none';
+        void stampContainer.offsetWidth; // Force reflow
+        stampContainer.style.animation = 'stampDrop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+
+        // Stamp Metadata Line
+        const topScore = sources.length > 0 ? (sources[0].score || 0.65).toFixed(2) : '0.65';
+        document.getElementById('stamp-meta-text').textContent = 
+          `Confidence: ${topScore} · Based on ${sources.length} filed report${sources.length === 1 ? '' : 's'}`;
+
+        // 2. Lead Story Content
+        const parsed = parseStoryContent(data.answer, question);
+        document.getElementById('story-headline').textContent = parsed.headline;
+        
+        const deckEl = document.getElementById('story-deck');
+        if (parsed.deck) {
+          deckEl.textContent = parsed.deck;
+          deckEl.style.display = 'block';
+        } else {
+          deckEl.style.display = 'none';
+        }
+
+        // Byline
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('story-timestamp').textContent = `at ${timeStr}`;
+        document.getElementById('story-provider').textContent = `Source Model: ${(data.provider || 'Groq').toUpperCase()}`;
+
+        // Two-column Story Body
+        document.getElementById('story-body').innerHTML = formatStoryBodyHtml(parsed.bodyParagraphs, verdict);
+
+        // 3. Archive Sources Grid
+        const archiveHeading = document.getElementById('archive-header-text');
+        archiveHeading.textContent = `RELATED REPORTS FROM THE ARCHIVE — ${sources.length} DISPATCH${sources.length === 1 ? '' : 'ES'} —`;
+
+        const sourcesGrid = document.getElementById('sources-grid');
+        sourcesGrid.innerHTML = '';
 
         if (sources.length === 0) {
-          sourcesList.innerHTML = `
-            <div class="source-card" style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-              No matching knowledge base sources found above the similarity threshold.
+          sourcesGrid.innerHTML = `
+            <div class="article-col" style="grid-column: 1 / -1; text-align: center; color: var(--ink-muted); padding: 2rem 1rem;">
+              No matching archival fact-checks found above the confidence threshold.
             </div>`;
         } else {
-          sources.forEach(src => {
-            const card = document.createElement('div');
-            card.className = 'source-card';
+          sources.forEach((src, idx) => {
+            const articleCol = document.createElement('article');
+            articleCol.className = 'article-col';
             
-            const urlLink = src.url ? 
-              `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(src.title || src.url)} &#x2197;</a>` :
-              escapeHtml(src.title || 'Untitled Fact Check');
+            // Make the first article featured (span 2 columns) if there are 2 or 4 articles
+            if (idx === 0 && (sources.length === 2 || sources.length === 4)) {
+              articleCol.classList.add('featured-article');
+            }
 
-            card.innerHTML = `
-              <div class="source-meta">
-                <span class="source-domain">&#x1F517; ${escapeHtml(src.source || 'Knowledge Base')}</span>
-                <div class="source-badges">
-                  ${formatVerdict(src.verdict)}
-                  <span class="score-badge">Match: ${src.score}</span>
+            const cleanTitle = (src.title || src.url || 'Archived Dispatch')
+              .replace(/\?\?/g, '"')
+              .replace(/\?1/g, '₹');
+
+            const headlineLink = src.url ? 
+              `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(cleanTitle)} &rarr;</a>` :
+              escapeHtml(cleanTitle);
+
+            const v = (src.verdict || 'UNVERIFIED').toUpperCase();
+            let vClass = 'tag-misc';
+            let vText = '■ ' + v;
+            if (v.includes('FALSE') || v.includes('FAKE')) {
+              vClass = 'tag-false';
+            } else if (v.includes('TRUE')) {
+              vClass = 'tag-true';
+            }
+
+            const excerptText = cleanExcerpt(src.excerpt);
+            const dateline = extractDateline(src);
+            const relevancePct = Math.min(100, Math.round((src.score || 0.5) * 100));
+
+            articleCol.innerHTML = `
+              <div class="article-dateline">
+                <span>${dateline}</span>
+              </div>
+              <h3 class="article-headline">${headlineLink}</h3>
+              <div class="article-tag ${vClass}">${escapeHtml(vText)}</div>
+              ${excerptText ? `<p class="article-excerpt">${escapeHtml(excerptText)}</p>` : ''}
+              ${src.url ? `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer" class="article-link-cont">Continued at source &rarr;</a>` : ''}
+              <div class="relevance-block">
+                <div class="relevance-label">
+                  <span>Relevance</span>
+                  <span>${relevancePct}%</span>
+                </div>
+                <div class="ink-bar-track">
+                  <div class="ink-bar-fill" style="width: ${relevancePct}%;"></div>
                 </div>
               </div>
-              <div class="source-headline">${urlLink}</div>
-              ${src.excerpt ? `<blockquote class="source-excerpt">${escapeHtml(src.excerpt)}</blockquote>` : ''}
             `;
-            sourcesList.appendChild(card);
+            sourcesGrid.appendChild(articleCol);
           });
         }
 
@@ -717,7 +1264,8 @@
         resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       } catch (err) {
-        showError(err.message || 'An error occurred while contacting the server.');
+        showError(err.message || 'An error occurred while contacting the Fact Desk.');
+        if (emptyState) emptyState.style.display = 'block';
       } finally {
         clearTimeout(timer);
         askBtn.disabled = false;
